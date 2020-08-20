@@ -2,22 +2,60 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on litchi</title>
-    <link>http://example.org/post/</link>
+    <link>https://litchi99.github.io/post/</link>
     <description>Recent content in Posts on litchi</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 20 Aug 2020 10:52:47 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 20 Aug 2020 12:05:35 +0800</lastBuildDate>
     
-	<atom:link href="http://example.org/post/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://litchi99.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>Test1</title>
+      <link>https://litchi99.github.io/post/test1/</link>
+      <pubDate>Thu, 20 Aug 2020 12:05:35 +0800</pubDate>
+      
+      <guid>https://litchi99.github.io/post/test1/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>配置树莓派的frp反向代理与supervisor进程守护与开机自启脚本</title>
-      <link>http://example.org/post/raspberry/</link>
+      <link>https://litchi99.github.io/post/raspberry/</link>
       <pubDate>Thu, 20 Aug 2020 10:52:47 +0800</pubDate>
       
-      <guid>http://example.org/post/raspberry/</guid>
+      <guid>https://litchi99.github.io/post/raspberry/</guid>
       <description>1. frp下载与安装  在github上直接搜索frp，选择release最新版本，由于树莓派是32bit系统，因此需要下载arm版本的frp 直接在Download文件夹解压安装，然后编辑frpc.ini文件  [common] server_addr = 47.115.79.112 server_port = 7000 [ssh2] //与frps相对应 type = tcp local_ip = 127.0.0.1 local_port = 22 remote_port = 6002 //与frps相对应，未被占用的端口 [vnc] //与frps相对应 type = tcp local_ip = 127.0.0.1 local_port = 5900 remote_port = 5902 //无需在frps中配置  frpc启动命令 ./frpc -c ./frpc.ini  2. 使用supervisor对frpc进程化  supervisor3.2.0版本只能在python2.4+中运行 要在python3中运行，需要python版本默认在python3中，执行pip install supervisor 安装成功后，目录/etc/中可能无法找到supervisord.conf 自行在/etc文件夹中创建supervisor文件夹，然后创建配置文件sudo su - root -c &amp;quot;echo_supervisord_conf &amp;gt; /etc/supervisor/supervisord.conf&amp;quot; 在supervisord.conf文件中配置[include] files = /etc/supervisor/supervisord.d/*.ini 接着在conf.d文件夹中新建frp.conf,添加的内容如下：  [program:frp]	//	frp用于执行supervisor进程 command = /home/pi/Downloads/frp_0.</description>
+    </item>
+    
+    <item>
+      <title>First</title>
+      <link>https://litchi99.github.io/post/first/</link>
+      <pubDate>Thu, 20 Aug 2020 10:32:47 +0800</pubDate>
+      
+      <guid>https://litchi99.github.io/post/first/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>sample</title>
+      <link>https://litchi99.github.io/post/test/</link>
+      <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://litchi99.github.io/post/test/</guid>
+      <description>Hugo is the world&amp;rsquo;s fastest static website engine. It&amp;rsquo;s written in Go (aka Golang) and developed by bep, spf13 and friends.
+ Below you will find some of the most common and helpful pages from our documentation.
+ https://gohugo.io/documentation/</description>
+    </item>
+    
+    <item>
+      <title>test post</title>
+      <link>https://litchi99.github.io/post/test/</link>
+      <pubDate>Fri, 01 Jan 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://litchi99.github.io/post/test/</guid>
+      <description>echo &amp;#34;hello world !!&amp;#34; </description>
     </item>
     
   </channel>

@@ -96,6 +96,172 @@
 	   
 <article class="post post">
     <header class="post-header">
+        <h2 class="post-title"><a href="/post/test1/">Test1</a></h2>
+    </header>
+    <section class="post-excerpt">
+      <p>
+          <section class="post-content">
+            
+          </section>
+      </p>
+      
+    </section>
+    <footer class="post-meta">
+        
+            <img class="author-thumb" src="https://litchi99.github.io/images/user.png" alt="Author image" nopin="nopin" />
+        
+        
+            syui
+        
+        
+        <time class="post-date" datetime="2020-08-20T12:05:35&#43;08:00">
+            20 Aug 2020
+        </time>
+    </footer>
+</article>
+
+	
+	   
+<article class="post post">
+    <header class="post-header">
+        <h2 class="post-title"><a href="/post/raspberry/">配置树莓派的frp反向代理与supervisor进程守护与开机自启脚本</a></h2>
+    </header>
+    <section class="post-excerpt">
+      <p>
+          <section class="post-content">
+            <h4 id="1-frp下载与安装">1. frp下载与安装</h4>
+<ul>
+<li>在github上直接搜索frp，选择release最新版本，由于树莓派是32bit系统，因此需要下载arm版本的frp</li>
+<li>直接在Download文件夹解压安装，然后编辑frpc.ini文件</li>
+</ul>
+<pre><code>[common]
+server_addr = 47.115.79.112
+server_port = 7000
+
+[ssh2] //与frps相对应
+type = tcp
+local_ip = 127.0.0.1
+local_port = 22
+remote_port = 6002 //与frps相对应，未被占用的端口
+
+[vnc] //与frps相对应
+type = tcp
+local_ip = 127.0.0.1
+local_port = 5900
+remote_port = 5902 //无需在frps中配置
+</code></pre><ul>
+<li>frpc启动命令 <code>./frpc -c ./frpc.ini</code></li>
+</ul>
+<h4 id="2-使用supervisor对frpc进程化">2. 使用supervisor对frpc进程化</h4>
+<ul>
+<li>supervisor3.2.0版本只能在python2.4+中运行</li>
+<li>要在python3中运行，需要python版本默认在python3中，执行<code>pip install supervisor</code></li>
+<li>安装成功后，目录<code>/etc/</code>中可能无法找到supervisord.conf</li>
+<li>自行在/etc文件夹中创建supervisor文件夹，然后创建配置文件<code>sudo su - root -c &quot;echo_supervisord_conf &gt; /etc/supervisor/supervisord.conf&quot;</code></li>
+<li>在supervisord.conf文件中配置<code>[include]  files = /etc/supervisor/supervisord.d/*.ini</code></li>
+<li>接着在conf.d文件夹中新建frp.conf,添加的内容如下：</li>
+</ul>
+<pre><code>[program:frp]	//	frp用于执行supervisor进程
+command = /home/pi/Downloads/frp_0.33.0_linux_arm/frpc -c home/pi/Downloads/frp_0.33.0_linux_arm/frpc.ini
+autostart = true
+</code></pre><h4 id="3-启动supervisor服务">3. 启动supervisor服务</h4>
+<ul>
+<li>sudo supervisord -c /etc/supervisor/supervisord.conf</li>
+<li>查看进程：<code>sudo supervisorctl status</code></li>
+<li>重启进程：<code>sudo supervisorctl restart frp</code></li>
+<li>停止进程：<code>sudo supervisorctl stop frp</code></li>
+<li>启动进程：<code>sudo supervisorctl start frp</code></li>
+<li>重载进程：<code>sudo supervisorctl reload</code></li>
+</ul>
+<h4 id="4-开机自启supervisor">4. 开机自启supervisor</h4>
+<p>在默认情况下，supervisor没有被安装成服务，其本身也是进程，可以通过如下方式进行supervisor开机自启：</p>
+<h5 id="41-systemctl">4.1 systemctl</h5>
+<ul>
+<li>启动服务：systemctl start xxx.service</li>
+<li>关闭服务：systemctl stop xxx.service</li>
+<li>重启服务：systemctl restart xxx.service</li>
+<li>显示服务的状态：systemctl status xxx.service</li>
+<li>在开机时启用服务：systemctl enable xxx.service</li>
+<li>在开机时禁用服务：systemctl disable xxx.service</li>
+<li>查看服务是否开机启动：systemctl is-enabled xxx.service</li>
+<li>查看已启动的服务列表：systemctl list-unit-files|grep enabled</li>
+<li>查看启动失败的服务列表：systemctl &ndash;failed</li>
+</ul>
+<h5 id="42-利用systemctl开机启动supervisor">4.2 利用systemctl开机启动supervisor</h5>
+<pre><code>vi /usr/lib/systemd/system/supervisord.service
+写入以下内容：
+[Unit]
+Description=Supervisor daemon
+
+[Service]
+Type=forking
+ExecStart=/usr/local/bin/supervisord -c /etc/supervisor/supervisord.conf  #根据实际路径填写
+ExecStop=/usr/local/bin/supervisorctl shutdown
+ExecReload=/usr/local/cdbin/supervisorctl reload
+KillMode=process
+Restart=on-failure
+RestartSec=42s
+
+[Install]
+WantedBy=multi-user.target
+</code></pre><h5 id="43-简单方法-利用开机执行etcrcloacl内的脚本实现服务自启">4.3 简单方法 利用开机执行<code>/etc/rc.loacl</code>内的脚本，实现服务自启</h5>
+<ul>
+<li>以上内容需要添加在 exit 命令前，而且由于在执行 rc.local 脚本时，PATH 环境变量未全部初始化，因此命令需要使用绝对路径</li>
+<li>Debian系统: <code>/usr/local/bin/supervisord -c /etc/supervisor/supervisord.conf</code></li>
+<li>查找相关命令的绝对路径：<code>sudo find / -name supervisord</code></li>
+</ul>
+<p>注意：在设置时先直接执行上述命令，判断命令是否正确</p>
+
+          </section>
+      </p>
+      
+    </section>
+    <footer class="post-meta">
+        
+            <img class="author-thumb" src="https://litchi99.github.io/images/user.png" alt="Author image" nopin="nopin" />
+        
+        
+            syui
+        
+        
+        <time class="post-date" datetime="2020-08-20T10:52:47&#43;08:00">
+            20 Aug 2020
+        </time>
+    </footer>
+</article>
+
+	
+	   
+<article class="post post">
+    <header class="post-header">
+        <h2 class="post-title"><a href="/post/first/">First</a></h2>
+    </header>
+    <section class="post-excerpt">
+      <p>
+          <section class="post-content">
+            
+          </section>
+      </p>
+      
+    </section>
+    <footer class="post-meta">
+        
+            <img class="author-thumb" src="https://litchi99.github.io/images/user.png" alt="Author image" nopin="nopin" />
+        
+        
+            syui
+        
+        
+        <time class="post-date" datetime="2020-08-20T10:32:47&#43;08:00">
+            20 Aug 2020
+        </time>
+    </footer>
+</article>
+
+	
+	   
+<article class="post post">
+    <header class="post-header">
         <h2 class="post-title"><a href="/post/test/">sample</a></h2>
     </header>
     <section class="post-excerpt">
